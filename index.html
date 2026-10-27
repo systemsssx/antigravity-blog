@@ -7,6 +7,25 @@
 <title>Antigravity 两份排查记录：登录 illegal location 与 400 报错</title>
 <meta name="description" content="技术研究记录：第一部分解决登录提示 illegal location、无法登录的问题（本地 hasValidAuth 补丁 + Google 验证）；第二部分解决代理开着却报 400 的网络问题（系统代理漏流量、全局 TUN 接管与回环例外）。">
 <meta name="theme-color" content="#f4f6f1">
+<meta name="author" content="systemsssx">
+<link rel="canonical" href="https://systemsssx.github.io/antigravity-blog/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2322634b'/%3E%3Ctext x='32' y='46' font-size='42' font-family='Georgia,serif' fill='%23f4f6f1' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="systemsssx · 技术研究记录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:title" content="Antigravity 两份排查记录：登录 illegal location 与 400 报错">
+<meta property="og:description" content="第一部分解决登录提示 illegal location、无法登录的问题（本地 hasValidAuth 补丁 + Google 验证）；第二部分解决代理开着却报 400 的网络问题（系统代理漏流量、全局 TUN 接管与回环例外）。">
+<meta property="og:url" content="https://systemsssx.github.io/antigravity-blog/">
+<meta property="og:image" content="https://systemsssx.github.io/antigravity-blog/assets/og-card.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Antigravity 登录拦截与 400 报错 · 两份技术排查记录">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Antigravity 两份排查记录：登录 illegal location 与 400 报错">
+<meta name="twitter:description" content="第一部分：hasValidAuth 本地补丁 + Google 验证；第二部分：全局 TUN 接管 + 回环例外。">
+<meta name="twitter:image" content="https://systemsssx.github.io/antigravity-blog/assets/og-card.png">
+<meta name="twitter:image:alt" content="Antigravity 登录拦截与 400 报错 · 两份技术排查记录">
 <script>
 (function () {
   try {
@@ -2202,6 +2221,203 @@ td { color: var(--ink); }
   .part-divider__meta { font-family: var(--font-sans); }
   .part-divider__kicker { letter-spacing: 0.1em; }
 }
+
+/* ============================================================
+   GitHub star + repository CTA
+   ============================================================ */
+.gh-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--ink-strong);
+  border-radius: 999px;
+  background: var(--ink-strong);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+.gh-star svg { width: 14px; height: 14px; flex: 0 0 auto; }
+
+.gh-star:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(0, 0, 0, 0.55);
+  opacity: 0.94;
+}
+
+.repo-cta {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+  background:
+    linear-gradient(100deg, var(--accent-soft) 0%, transparent 58%),
+    var(--surface);
+}
+
+.repo-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent 70%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent 70%);
+}
+
+.repo-cta__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(18px, 3vw, 44px);
+  padding: 22px 0;
+}
+
+.repo-cta__main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.repo-cta__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 47px;
+  height: 47px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  background: var(--ink-strong);
+  color: var(--paper);
+  box-shadow: 0 14px 28px -18px rgba(0, 0, 0, 0.6);
+}
+
+.repo-cta__badge svg { width: 24px; height: 24px; }
+
+.repo-cta__kicker {
+  margin: 0 0 3px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+
+.repo-cta__title {
+  margin: 0;
+  font-size: clamp(1rem, 1.55vw, 1.14rem);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-strong);
+}
+
+.repo-cta__title code {
+  padding: 0.08em 0.38em;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  white-space: nowrap;
+}
+
+.repo-cta__desc {
+  margin: 5px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.62;
+  color: var(--muted);
+}
+
+.repo-cta__desc strong { color: var(--ink-strong); font-weight: 700; }
+
+.repo-cta__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+.repo-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.repo-cta__btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
+
+.repo-cta__btn--star {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
+}
+
+.repo-cta__btn--star:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  transform: translateY(-1px);
+}
+
+.repo-cta__btn--ghost {
+  border-color: var(--rule-strong);
+  background: transparent;
+  color: var(--ink);
+}
+
+.repo-cta__btn--ghost:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.repo-cta__hint {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.02em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .repo-cta__inner { flex-direction: column; align-items: flex-start; }
+  .repo-cta__actions { justify-content: flex-start; }
+}
+
+@media (max-width: 640px) {
+  .masthead__inner { min-height: 58px; }
+  .gh-star { min-height: 32px; padding: 0 11px; }
+  .gh-star span { display: none; }
+  .masthead__tag { display: none; }
+  .repo-cta__inner { padding: 18px 0; }
+  .repo-cta__badge { width: 40px; height: 40px; border-radius: 12px; }
+  .repo-cta__badge svg { width: 21px; height: 21px; }
+  .repo-cta__hint { display: none; }
+  .repo-cta__btn { flex: 1 1 auto; justify-content: center; }
+}
+
+.footer__repo { color: inherit; }
 </style>
 </head>
 <body>
@@ -2249,6 +2465,10 @@ td { color: var(--ink); }
       </span>
     </a>
     <div class="masthead__actions">
+      <a class="gh-star" href="https://github.com/systemsssx/antigravity-blog" target="_blank" rel="noopener" title="在 GitHub 上给这个仓库点个 Star">
+        <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="currentColor"/></svg>
+        <span>Star</span>
+      </a>
       <span class="masthead__tag">non-official note</span>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换浅色或深色主题" aria-pressed="false" title="切换浅色 / 深色主题">
         <svg class="theme-icon theme-icon--moon" aria-hidden="true" viewBox="0 0 24 24"><use href="#icon-moon"></use></svg>
@@ -2258,6 +2478,29 @@ td { color: var(--ink); }
     </div>
   </div>
 </header>
+
+<section class="repo-cta" aria-labelledby="repo-cta-title">
+  <div class="wrap repo-cta__inner">
+    <div class="repo-cta__main">
+      <span class="repo-cta__badge" aria-hidden="true">
+        <svg viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="currentColor"/></svg>
+      </span>
+      <div>
+        <p class="repo-cta__kicker">开源在 GitHub · 欢迎 Star</p>
+        <h2 class="repo-cta__title" id="repo-cta-title">这篇排查记录已开源：<code>systemsssx/antigravity-blog</code></h2>
+        <p class="repo-cta__desc">文章与后续更新都放在仓库里。觉得有用，去仓库点个 <strong>Star ⭐</strong> 支持一下；有问题或补充欢迎到 <strong>Discussions</strong> 交流。</p>
+      </div>
+    </div>
+    <div class="repo-cta__actions">
+      <a class="repo-cta__btn repo-cta__btn--star" href="https://github.com/systemsssx/antigravity-blog" target="_blank" rel="noopener">
+        <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="currentColor"/></svg>
+        <span>去 GitHub 点 Star</span>
+      </a>
+      <a class="repo-cta__btn repo-cta__btn--ghost" href="https://github.com/systemsssx/antigravity-blog/discussions" target="_blank" rel="noopener">进入 Discussions</a>
+      <span class="repo-cta__hint">仓库主页 → Star 按钮，一键支持 ⭐</span>
+    </div>
+  </div>
+</section>
 
 <main id="main">
   <section class="hero" aria-labelledby="page-title">
@@ -3427,6 +3670,8 @@ setx NO_PROXY "localhost,127.0.0.1,::1"</code></pre>
       <p class="footer__copy">内容仅用于技术原理分析与问题排查记录，不构成对任何软件许可协议或服务条款的规避建议，也不保证所述方法长期有效。修改二进制文件、更改网络出口、使用 TUN / VPN 均可能违反服务条款、影响局域网与内网访问，并导致账号受限；相关风险与后果由操作者自行承担。</p>
       <div class="footer__bottom">
         <span>非官方文档 / 不提供下载</span>
+        <a class="footer__repo" href="https://github.com/systemsssx/antigravity-blog" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a class="footer__repo" href="https://github.com/systemsssx/antigravity-blog/discussions" target="_blank" rel="noopener">Discussions</a>
         <a href="#top">回到顶部 ↑</a>
       </div>
     </div>
