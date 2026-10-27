@@ -89,9 +89,11 @@ start .\index.html
 <meta name="twitter:card" content="summary_large_image">
 ```
 
+> **仓库主页的社交预览图**：GitHub 暂未开放通过 API 上传，可在仓库 `Settings → Social preview → Edit` 手动上传 `assets/og-card.png`（1200×630），只需设置一次。
+
 ## 反馈与讨论
 
-- 💬 **Discussions**：<https://github.com/systemsssx/antigravity-blog/discussions>
+- 💬 **Discussions（已开启）**：<https://github.com/systemsssx/antigravity-blog/discussions> — 欢迎先到 [欢迎帖](https://github.com/systemsssx/antigravity-blog/discussions/1) 打个招呼
 - 🐛 **Issues**：<https://github.com/systemsssx/antigravity-blog/issues>
 - ⭐ **Star**：<https://github.com/systemsssx/antigravity-blog>
 - 👀 **Watch**：订阅后续修订

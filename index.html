@@ -2418,6 +2418,36 @@ td { color: var(--ink); }
 }
 
 .footer__repo { color: inherit; }
+
+/* Clickable hero gate cards */
+a.gate {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+a.gate:hover { background: var(--gate-soft); }
+
+a.gate:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+.gate__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gate__go {
+  opacity: 0.58;
+  white-space: nowrap;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+a.gate:hover .gate__go { opacity: 1; transform: translateX(2px); }
 </style>
 </head>
 <body>
@@ -2460,8 +2490,8 @@ td { color: var(--ink); }
     <a class="masthead__brand" href="#top" aria-label="回到页面顶部">
       <svg class="brand-mark" aria-hidden="true" viewBox="0 0 32 32"><use href="#icon-mark"></use></svg>
       <span class="brand-copy">
-        <span class="brand-copy__title">区域可用性研究</span>
-        <span class="brand-copy__sub">技术研究记录 / 非官方</span>
+        <span class="brand-copy__title">Antigravity 排查记录</span>
+        <span class="brand-copy__sub">技术研究 · 非官方 · GitHub 开源</span>
       </span>
     </a>
     <div class="masthead__actions">
@@ -2469,7 +2499,6 @@ td { color: var(--ink); }
         <svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" fill="currentColor"/></svg>
         <span>Star</span>
       </a>
-      <span class="masthead__tag">non-official note</span>
       <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换浅色或深色主题" aria-pressed="false" title="切换浅色 / 深色主题">
         <svg class="theme-icon theme-icon--moon" aria-hidden="true" viewBox="0 0 24 24"><use href="#icon-moon"></use></svg>
         <svg class="theme-icon theme-icon--sun" aria-hidden="true" viewBox="0 0 24 24"><use href="#icon-sun"></use></svg>
@@ -2534,24 +2563,24 @@ td { color: var(--ink); }
           <span class="gate-map__note">互不依赖，可分别阅读</span>
         </figcaption>
         <div class="gate-map__grid gate-map__grid--2">
-          <div class="gate gate--1">
+          <a class="gate gate--1" href="#tldr">
             <div class="gate__top">
               <span class="gate__index" aria-hidden="true">01</span>
               <span class="gate__state">第一部分 / 本地</span>
             </div>
             <p class="gate__title">登录报 <code>illegal location</code>，无法登录</p>
             <p class="gate__desc">登录时被地区 / 资格检查拦下，进不去主界面。补丁把 <code>hasValidAuth</code> 改成 true 进入主界面，再按服务端返回的 <code>validation_url</code> 完成 Google 验证。</p>
-            <p class="gate__foot">4 节 · 改 6 字节 + 1 次验证</p>
-          </div>
-          <div class="gate gate--3">
+            <p class="gate__foot"><span>4 节 · 改 6 字节 + 1 次验证</span><span class="gate__go">开始阅读 →</span></p>
+          </a>
+          <a class="gate gate--3" href="#p2-intro">
             <div class="gate__top">
               <span class="gate__index" aria-hidden="true">02</span>
               <span class="gate__state">第二部分 / 网络</span>
             </div>
             <p class="gate__title">代理开着却报 400</p>
             <p class="gate__desc">系统代理只覆盖愿意读 WinINET 的进程；Go 语言服务器、Electron 旁路和子进程直连超时。用全局 TUN 接管，再补回环例外。</p>
-            <p class="gate__foot">10 节 · TUN + 回环 + 五条检查</p>
-          </div>
+            <p class="gate__foot"><span>10 节 · TUN + 回环 + 五条检查</span><span class="gate__go">开始阅读 →</span></p>
+          </a>
         </div>
       </figure>
     </div>
